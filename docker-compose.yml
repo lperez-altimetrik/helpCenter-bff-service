@@ -1,0 +1,15 @@
+version: '3.1'
+
+services:
+  redis:
+    image: redis
+    container_name: redis_cache
+    ports:
+      - "6379:6379"
+
+  helpcenter-bff:
+    build: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      - redis
