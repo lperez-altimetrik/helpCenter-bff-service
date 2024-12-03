@@ -1,0 +1,7 @@
+okta:
+  client:
+    orgUrl: https://dev-example.okta.com
+    token: test-token
+spring:
+  main:
+    allow-bean-definition-overriding: true

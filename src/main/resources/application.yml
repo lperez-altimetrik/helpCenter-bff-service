@@ -1,0 +1,6 @@
+okta:
+  client:
+    orgUrl: "https://your-okta-domain.com"
+    token: "YOUR_OKTA_API_TOKEN"
+server:
+  port: 8080
