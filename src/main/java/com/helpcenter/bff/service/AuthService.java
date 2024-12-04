@@ -7,21 +7,31 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class AuthService {
 
     private final ApiClient oktaApiClient;
+    private final CacheService cacheService;
 
     @Autowired
-    public AuthService(ApiClient oktaApiClient) {
+    public AuthService(ApiClient oktaApiClient, CacheService cacheService) {
         this.oktaApiClient = oktaApiClient;
+        this.cacheService = cacheService;
     }
 
     public User getUserById(String userId) {
+        // Check if user is cached
+        User cachedUser = (User) cacheService.getValue(userId);
+        if (cachedUser != null) {
+            return cachedUser;
+        }
+
         try {
             String path = "/api/v1/users/" + userId; // API endpoint to fetch the user
-            return oktaApiClient.invokeAPI(
+            // Fetch the user from Okta API
+            User user = oktaApiClient.invokeAPI(
                     path,                          // Path to the API endpoint
                     "GET",                         // HTTP method
                     null,                          // Query parameters
@@ -36,8 +46,15 @@ public class AuthService {
                     new String[]{"Authorization"}, // Authentication names
                     new TypeReference<User>() {}   // Expected return type
             );
+
+            // Cache the user for 10 minutes
+            cacheService.setValue(userId, user, 10, TimeUnit.MINUTES);
+
+            // Return the fetched user
+            return user;
         } catch (Exception e) {
             throw new RuntimeException("Error fetching user with ID: " + userId, e);
         }
     }
+
 }
