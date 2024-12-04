@@ -1,6 +1,13 @@
-okta:
-  client:
-    orgUrl: "https://your-okta-domain.com"
-    token: "YOUR_OKTA_API_TOKEN"
 server:
   port: 8080
+
+okta:
+  client:
+    orgUrl: ${OKTA_ORG_URL}
+    token: ${OKTA_CLIENT_TOKEN}
+
+spring:
+  data:
+    redis:
+      port: ${SPRING_REDIS_PORT:6379}
+      host: ${SPRING_REDIS_HOST:localhost}
