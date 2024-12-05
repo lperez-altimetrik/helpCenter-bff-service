@@ -1,6 +1,5 @@
 package com.helpcenter.bff.service;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.okta.sdk.resource.client.ApiClient;
 import com.okta.sdk.resource.model.User;
 import org.junit.jupiter.api.BeforeEach;
