@@ -17,10 +17,8 @@ class AuthServiceTest {
 
     @Mock
     private ApiClient apiClient;
-
     @InjectMocks
     private AuthService authService;
-
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);

@@ -16,10 +16,8 @@ class CacheServiceTest {
 
     @Mock
     private RedisTemplate<String, Object> redisTemplate;
-
     @Mock
     private ValueOperations<String, Object> valueOperations;
-
     private CacheService cacheService;
 
     @BeforeEach
