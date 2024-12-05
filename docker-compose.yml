@@ -6,8 +6,15 @@ services:
     container_name: redis_cache
     ports:
       - "6379:6379"
+    environment:
+      - REDIS_PASSWORD=${SPRING_REDIS_PASSWORD:-} # Use environment variable with default empty password
     networks:
       - helpcenter_network
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   helpcenter-bff:
     build:
@@ -18,13 +25,22 @@ services:
       - "8080:8080"
     environment:
       - SPRING_REDIS_HOST=redis
-      - SPRING_REDIS_PORT=6379
-      - OKTA_ORG_URL=https://dev-example.okta.com
-      - OKTA_CLIENT_TOKEN=your-okta-token
+      - SPRING_REDIS_PORT=${SPRING_REDIS_PORT:-6379}
+      - OKTA_ORG_URL=${OKTA_ORG_URL}
+      - OKTA_CLIENT_TOKEN=${OKTA_CLIENT_TOKEN}
+      - CONTENT_API_BASE_URL=${CONTENT_API_BASE_URL:-http://localhost:9090/api}
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE:-default}
     depends_on:
       - redis
     networks:
       - helpcenter_network
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    volumes:
+      - ./logs:/app/logs # Log directory for local and container logs
 
 networks:
   helpcenter_network:
