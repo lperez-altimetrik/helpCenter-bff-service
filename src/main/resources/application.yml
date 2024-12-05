@@ -9,5 +9,7 @@ okta:
 spring:
   data:
     redis:
-      port: ${SPRING_REDIS_PORT:6379}
       host: ${SPRING_REDIS_HOST:localhost}
+      password: ${SPRING_REDIS_PASSWORD:}
+      port: ${SPRING_REDIS_PORT:6379}
+      timeout: 5000
