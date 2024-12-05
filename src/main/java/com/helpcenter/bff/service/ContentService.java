@@ -14,7 +14,6 @@ public class ContentService {
         logger.info("Fetching content for category: {}", category);
 
         try {
-            // Simulate content fetching logic
             if (category == null || category.trim().isEmpty()) {
                 throw new IllegalArgumentException("Category cannot be null or empty");
             }
