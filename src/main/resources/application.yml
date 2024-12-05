@@ -13,3 +13,23 @@ spring:
       password: ${SPRING_REDIS_PASSWORD:}
       port: ${SPRING_REDIS_PORT:6379}
       timeout: 5000
+
+logging:
+  level:
+    root: INFO
+    com.helpcenter: DEBUG
+  file:
+    name: logs/help-center-bff.log
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
+content:
+  api:
+    base-url: ${CONTENT_API_BASE_URL:http://localhost:9090/api}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
