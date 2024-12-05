@@ -1,60 +1,56 @@
 package com.helpcenter.bff.service;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.okta.sdk.resource.client.ApiClient;
 import com.okta.sdk.resource.model.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
 @Service
 public class AuthService {
 
-    private final ApiClient oktaApiClient;
+    private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
+    private final OktaWrapper oktaWrapper;
     private final CacheService cacheService;
 
     @Autowired
-    public AuthService(ApiClient oktaApiClient, CacheService cacheService) {
-        this.oktaApiClient = oktaApiClient;
+    public AuthService(OktaWrapper oktaWrapper, CacheService cacheService) {
+        this.oktaWrapper = oktaWrapper;
         this.cacheService = cacheService;
     }
 
     public User getUserById(String userId) {
-        // Check if user is cached
-        User cachedUser = (User) cacheService.getValue(userId);
-        if (cachedUser != null) {
-            return cachedUser;
-        }
-
         try {
-            String path = "/api/v1/users/" + userId; // API endpoint to fetch the user
-            // Fetch the user from Okta API
-            User user = oktaApiClient.invokeAPI(
-                    path,                          // Path to the API endpoint
-                    "GET",                         // HTTP method
-                    null,                          // Query parameters
-                    null,                          // Collection query parameters
-                    null,                          // URL query deep object
-                    null,                          // Body (not required for GET)
-                    Collections.emptyMap(),        // Header parameters
-                    Collections.emptyMap(),        // Cookie parameters
-                    Collections.emptyMap(),        // Form parameters
-                    "application/json",            // Accept header
-                    null,                          // Content-Type header (not required for GET)
-                    new String[]{"Authorization"}, // Authentication names
-                    new TypeReference<User>() {}   // Expected return type
-            );
+            // Check if user is cached
+            User cachedUser = (User) cacheService.getValue(userId);
+            if (cachedUser != null) {
+                return cachedUser;
+            }
+
+            // Fetch user from Okta
+            User user = oktaWrapper.getUserById(userId);
 
             // Cache the user for 10 minutes
             cacheService.setValue(userId, user, 10, TimeUnit.MINUTES);
 
-            // Return the fetched user
             return user;
+        } catch (IllegalArgumentException e) {
+            logger.warn("Invalid user ID: {}", userId, e);
+            throw e;
         } catch (Exception e) {
-            throw new RuntimeException("Error fetching user with ID: " + userId, e);
+            logger.error("Error in AuthService while fetching user with ID: {}", userId, e);
+            throw new RuntimeException("Error while fetching user details for ID: " + userId, e);
         }
     }
 
+
+    public void deactivateUser(String userId) {
+        // Deactivate user in Okta via OktaWrapper
+        oktaWrapper.deactivateUser(userId);
+
+        // Remove the user from the cache
+        cacheService.deleteValue(userId);
+    }
 }
