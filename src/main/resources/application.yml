@@ -3,8 +3,8 @@ server:
 
 okta:
   client:
-    orgUrl: ${OKTA_ORG_URL}
-    token: ${OKTA_CLIENT_TOKEN}
+    orgUrl: https://dev-example.okta.com
+    token: test-token
 
 spring:
   data:
